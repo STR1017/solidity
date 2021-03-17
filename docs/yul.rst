@@ -976,6 +976,47 @@ within one Yul subobject. If at least one ``memoryguard`` call is found in a sub
 the additional optimiser steps will be run on it.
 
 
+verbatim
+^^^^^^^^
+
+The set of ``verbatim`` builtin functions lets you create bytecode for opcodes
+that are not known to the Yul compiler. It also allows you to create
+bytecode sequences that will not be touched by the optimizer.
+
+The functions are ``verbatim_<n>i_<m>o("<data>", ...)``, where
+ - ``n`` is a decimal that specifies the number of input stack slots / variables
+ - ``m`` is a decimal that specifies the number of output stack slots / variables
+ - ``data`` is a string literal that contain the sequence of bytes
+
+If ``n`` is or ``m`` is zero, the full part can be left out.
+For example, ``verbatim_2o`` is a function that outputs two stack slots
+and does not consume any, while ``verbatim`` has no effect on the stack
+and ``verbatim_1i`` consumes one stack slot.
+
+If you for example want to define a function that multiplies the input
+by two, without the optimizer touching the constant two, you can use
+
+.. code-block::
+
+    let x := ...
+    let double := verbatim_1i_1o(hex"600202, x)
+
+This code will result in a ``dupN`` opcode to retrieve ``x``
+directly followed by ``600202``. The code is assumed to
+consume the copied value of ``x`` and produce the result
+on the top of the stack. The compiler then generates code
+to allocate a stack slot for ``double`` and store the result there.
+
+Since you could be using unknown opcodes, the ``verbatim`` builtins
+are being treated as having worst-case side-effects, i.e. the optimizer
+assumes they can potentially modify all state. On the other hand,
+it assumes that such builtins will leave the stack unchanged, except for the
+input and output values.
+
+The optimizer works if there are jumps inside the ``verbatim`` code,
+but control-flow should not jump out of or into this code.
+
+
 .. _yul-object:
 
 Specification of Yul Object
