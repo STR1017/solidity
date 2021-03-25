@@ -288,6 +288,8 @@ YulPeriod: '.';
 YulComma: ',';
 YulArrow: '->';
 
+YulHex: 'hex';
+
 /**
  * Yul identifiers consist of letters, dollar signs, underscores and numbers, but may not start with a number.
  * In inline assembly there cannot be dots in user-defined identifiers. Instead see yulPath for expressions
@@ -314,7 +316,7 @@ YulDecimalNumber: '0' | ([1-9] [0-9]*);
 YulStringLiteral:
 	'"' DoubleQuotedStringCharacter* '"'
 	| '\'' SingleQuotedStringCharacter* '\'';
-
+YulHexString: 'hex' (('"' ([0-9a-fA-F][0-9a-fA-F])* '"') | ('\'' ([0-9a-fA-F][0-9a-fA-F])* '\''));
 
 YulWS: [ \t\r\n\u000C]+ -> skip ;
 YulCOMMENT: '/*' .*? '*/' -> channel(HIDDEN) ;
