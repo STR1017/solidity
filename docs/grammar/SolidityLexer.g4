@@ -314,7 +314,7 @@ YulDecimalNumber: '0' | ([1-9] [0-9]*);
 YulStringLiteral:
 	'"' DoubleQuotedStringCharacter* '"'
 	| '\'' SingleQuotedStringCharacter* '\'';
-
+YulHexString: 'hex' (('"' ([0-9a-fA-F][0-9a-fA-F])* '"') | ('\'' ([0-9a-fA-F][0-9a-fA-F])* '\''));
 
 YulWS: [ \t\r\n\u000C]+ -> skip ;
 YulCOMMENT: '/*' .*? '*/' -> channel(HIDDEN) ;
