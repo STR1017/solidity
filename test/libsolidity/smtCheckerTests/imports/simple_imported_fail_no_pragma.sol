@@ -6,7 +6,9 @@ contract A {
 }
 ==== Source: B.sol ====
 import "A.sol";
-pragma experimental SMTChecker;
 contract C is A {}
+// ====
+// SMTEngine: all
 // ----
-// Warning 6328: (A.sol:49-62): CHC: Assertion violation happens here.\nCounterexample:\n\nx = 0\n\nTransaction trace:\nC.constructor()\nA.f(0)
+// Warning 6328: (A.sol:49-62): CHC: Assertion violation happens here.\nCounterexample:\n\nx = 0\n\nTransaction trace:\nA.constructor()\nA.f(0)
+// Warning 6328: (A.sol:49-62): CHC: Assertion violation happens here.\nCounterexample:\n\nx = 0\n\nTransaction trace:\nA.constructor()\nA.f(0)
