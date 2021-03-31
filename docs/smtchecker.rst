@@ -39,8 +39,15 @@ The potential warnings that the SMTChecker reports are:
 - ``<failing  property> happens here.``. This means that the SMTChecker proved that a certain property fails. A counterexample may be given, however in complex situations it may also not show a counterexample. This result may also be a false positive in certain cases, when the SMT encoding adds abstractions for Solidity code that is either hard or impossible to express.
 - ``<failing property> might happen here``. This means that the solver could not prove either case within the given timeout. Since the result is unknown, the SMTChecker reports the potential failure for soundness. This may be solved by increasing the query timeout, but the problem might also simply be too hard for the engine to solve.
 
-It is currently an experimental feature, therefore in order to use it you need
-to enable it via :ref:`a pragma directive<smt_checker>`.
+To enable the SMTChecker, you must select :ref:`which engine should run<smtchecker_engines>`,
+where the default is no engine.
+
+.. note::
+
+  Prior to Solidity 0.8.4, the default way to enable the SMTChecker was via
+  ``pragma experimental SMTChecker;``. That pragma has been deprecated, and
+  although it still enables the SMTChecker for backwards compatibility, it will
+  be removed in Solidity 0.9.0.
 
 .. note::
   The lack of warnings for a verification target represents an undisputed
@@ -62,9 +69,8 @@ Overflow
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Overflow {
         uint immutable x;
@@ -110,9 +116,8 @@ the SMTChecker proves that no overflow is reachable (by not reporting warnings):
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Overflow {
         uint immutable x;
@@ -149,9 +154,8 @@ definition to see what results come out!
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Monotonic {
         function f(uint _x) internal pure returns (uint) {
@@ -172,9 +176,8 @@ equal every element in the array.
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Max {
         function max(uint[] memory _a) public pure returns (uint) {
@@ -206,9 +209,8 @@ For example, changing the code to
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Max {
         function max(uint[] memory _a) public pure returns (uint) {
@@ -259,10 +261,8 @@ below.
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
-
 
     contract Robot {
         int x = 0;
@@ -361,9 +361,8 @@ anything, including reenter the caller contract.
 
 .. code-block:: Solidity
 
+    // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     interface Unknown {
     	function run() external;
@@ -468,6 +467,8 @@ A common subset of targets might be, for example:
 
 There is no precise heuristic on how and when to split verification targets,
 but it can be useful especially when dealing with large contracts.
+
+.. _smtchecker_engines:
 
 Model Checking Engines
 ======================
@@ -624,8 +625,6 @@ not mean loss of proving power.
 
     // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This may report a warning if no SMT solver is available.
 
     contract Recover
     {
@@ -673,8 +672,6 @@ types.
 
     // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.8.0;
-    pragma experimental SMTChecker;
-    // This will report a warning
 
     contract Aliasing
     {
