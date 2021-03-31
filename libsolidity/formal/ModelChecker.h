@@ -66,6 +66,8 @@ public:
 	static smtutil::SMTSolverChoice availableSolvers();
 
 private:
+	langutil::ErrorReporter& m_errorReporter;
+
 	ModelCheckerSettings m_settings;
 
 	/// Stores the context of the encoding.

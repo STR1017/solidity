@@ -34,6 +34,7 @@ ModelChecker::ModelChecker(
 	ReadCallback::Callback const& _smtCallback,
 	smtutil::SMTSolverChoice _enabledSolvers
 ):
+	m_errorReporter(_errorReporter),
 	m_settings(_settings),
 	m_context(),
 	m_bmc(m_context, _errorReporter, _smtlib2Responses, _smtCallback, _enabledSolvers, m_settings),
@@ -43,7 +44,32 @@ ModelChecker::ModelChecker(
 
 void ModelChecker::analyze(SourceUnit const& _source)
 {
-	if (!_source.annotation().experimentalFeatures.count(ExperimentalFeature::SMTChecker))
+	// TODO This should be removed for 0.9.0.
+	if (_source.annotation().experimentalFeatures.count(ExperimentalFeature::SMTChecker))
+	{
+		PragmaDirective const* smtPragma = nullptr;
+		for (auto node: _source.nodes())
+			if (auto pragma = dynamic_pointer_cast<PragmaDirective>(node))
+				if (
+					pragma->literals().size() >= 2 &&
+					pragma->literals().at(1) == "SMTChecker"
+				)
+				{
+					smtPragma = pragma.get();
+					break;
+				}
+		solAssert(smtPragma, "");
+		m_errorReporter.warning(
+			5523_error,
+			smtPragma->location(),
+			"The SMTChecker pragma has been deprecated and will be removed in the future. "
+			"Please use the \"model checker engine\" compiler setting to activate the SMTChecker instead. "
+			"If the pragma is enabled, all engines will be used."
+		);
+		m_settings.engine = ModelCheckerEngine::All();
+	}
+
+	if (m_settings.engine.none())
 		return;
 
 	if (m_settings.engine.chc)
