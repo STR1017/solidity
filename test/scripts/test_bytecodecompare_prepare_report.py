@@ -14,7 +14,7 @@ from bytecodecompare.prepare_report import load_source, parse_cli_output, parse_
 # pragma pylint: enable=import-error
 
 
-SMT_SMOKE_TEST_SOL_PATH = LIBSOLIDITY_TEST_DIR / 'smtCheckerTests/simple/smoke_test.sol'
+SMT_SMOKE_TEST_SOL_PATH = FIXTURE_DIR / 'smt_smoke_test.sol'
 SMT_SMOKE_TEST_SOL_CODE = load_libsolidity_test_case(SMT_SMOKE_TEST_SOL_PATH)
 
 SMT_CONTRACT_WITH_LF_NEWLINES_SOL_PATH = FIXTURE_DIR / 'smt_contract_with_lf_newlines.sol'
