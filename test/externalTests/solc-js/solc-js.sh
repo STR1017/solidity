@@ -35,7 +35,7 @@ function solcjs_test
     SOLCJS_INPUT_DIR="$TEST_DIR"/test/externalTests/solc-js
 
     # set up solc-js on the branch specified
-    setup "$SOLJSON" master
+    setup "$SOLJSON" smt_test_use_engine
 
     printLog "Updating index.js file..."
     echo "require('./determinism.js');" >> test/index.js
