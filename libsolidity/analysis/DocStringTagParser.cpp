@@ -167,7 +167,7 @@ void DocStringTagParser::parseDocStrings(
 	if (!_node.documentation())
 		return;
 
-	_annotation.docTags = DocStringParser{*_node.documentation(), m_errorReporter}.parse();
+	_annotation.docTags = DocStringParser{_node, m_errorReporter}.parse();
 
 	size_t returnTagsVisited = 0;
 	for (auto const& [tagName, tagValue]: _annotation.docTags)

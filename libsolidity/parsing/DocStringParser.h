@@ -24,6 +24,7 @@
 #pragma once
 
 #include <libsolidity/ast/ASTAnnotations.h>
+#include <libsolidity/ast/AST.h>
 #include <liblangutil/SourceLocation.h>
 #include <string>
 
@@ -41,10 +42,12 @@ class DocStringParser
 {
 public:
 	/// @param _documentedNode the node whose documentation is parsed.
-	DocStringParser(StructuredDocumentation const& _documentedNode, langutil::ErrorReporter& _errorReporter):
+	DocStringParser(StructurallyDocumented const& _documentedNode, langutil::ErrorReporter& _errorReporter):
 		m_node(_documentedNode),
 		m_errorReporter(_errorReporter)
-	{}
+	{
+		solAssert(m_node.documentation(), "");
+	}
 	std::multimap<std::string, DocTag> parse();
 
 private:
@@ -63,7 +66,8 @@ private:
 	/// Creates and inserts a new tag and adjusts m_lastTag.
 	void newTag(std::string const& _tagName);
 
-	StructuredDocumentation const& m_node;
+	/// A StructurallyDocumented node such that m_node.documentation() is not a `nullptr`.
+	StructurallyDocumented const& m_node;
 	langutil::ErrorReporter& m_errorReporter;
 	/// Mapping tag name -> content.
 	std::multimap<std::string, DocTag> m_docTags;

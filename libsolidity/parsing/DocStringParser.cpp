@@ -85,9 +85,9 @@ multimap<string, DocTag> DocStringParser::parse()
 	m_lastTag = nullptr;
 	m_docTags = {};
 
-	solAssert(m_node.text(), "");
-	iter currPos = m_node.text()->begin();
-	iter end = m_node.text()->end();
+	solAssert(m_node.documentation()->text(), "");
+	iter currPos = m_node.documentation()->text()->begin();
+	iter end = m_node.documentation()->text()->end();
 
 	while (currPos != end)
 	{
@@ -106,10 +106,19 @@ multimap<string, DocTag> DocStringParser::parse()
 			currPos = parseDocTagLine(currPos, end, true);
 		else if (currPos != end)
 		{
-			// if it begins without a tag then consider it as @notice
-			if (currPos == m_node.text()->begin())
+			// if it begins without a tag then consider it as @dev for non-public variables, and
+			// @notice for everything else
+			if (currPos == m_node.documentation()->text()->begin())
 			{
-				currPos = parseDocTag(currPos, end, "notice");
+				if (
+					auto variableDeclaration = dynamic_cast<VariableDeclaration const*>(&m_node);
+					variableDeclaration &&
+					!variableDeclaration->isPublic()
+				)
+					currPos = parseDocTag(currPos, end, "dev");
+				else
+					currPos = parseDocTag(currPos, end, "notice");
+
 				continue;
 			}
 			else if (nlPos == end) //end of text
@@ -139,7 +148,11 @@ DocStringParser::iter DocStringParser::parseDocTagParam(iter _pos, iter _end)
 	auto nameStartPos = skipWhitespace(_pos, _end);
 	if (nameStartPos == _end)
 	{
-		m_errorReporter.docstringParsingError(3335_error, m_node.location(), "No param name given");
+		m_errorReporter.docstringParsingError(
+			3335_error,
+			m_node.documentation()->location(),
+			"No param name given"
+		);
 		return _end;
 	}
 	auto nameEndPos = firstNonIdentifier(nameStartPos, _end);
@@ -150,7 +163,11 @@ DocStringParser::iter DocStringParser::parseDocTagParam(iter _pos, iter _end)
 
 	if (descStartPos == nlPos)
 	{
-		m_errorReporter.docstringParsingError(9942_error, m_node.location(), "No description given for param " + paramName);
+		m_errorReporter.docstringParsingError(
+			9942_error,
+			m_node.documentation()->location(),
+			"No description given for param " + paramName
+		);
 		return _end;
 	}
 
