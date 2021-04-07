@@ -63,8 +63,6 @@ void BMC::analyze(SourceUnit const& _source, map<ASTNode const*, set<Verificatio
 {
 	solAssert(_source.annotation().experimentalFeatures.count(ExperimentalFeature::SMTChecker), "");
 
-	/// This is currently used to abort analysis of SourceUnits
-	/// containing file level functions or constants.
 	if (SMTEncoder::analyze(_source))
 	{
 		m_solvedTargets = move(_solvedTargets);
@@ -72,6 +70,7 @@ void BMC::analyze(SourceUnit const& _source, map<ASTNode const*, set<Verificatio
 		m_context.clear();
 		m_context.setAssertionAccumulation(true);
 		m_variableUsage.setFunctionInlining(shouldInlineFunctionCall);
+		createFreeConstants(sourceDependencies(_source));
 
 		_source.accept(*this);
 	}

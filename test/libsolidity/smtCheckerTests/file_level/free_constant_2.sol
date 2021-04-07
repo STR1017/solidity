@@ -10,9 +10,3 @@ contract C {
 }
 // ----
 // Warning 2018: (220-310): Function state mutability can be restricted to pure
-// Warning 8195: (32-55): Model checker analysis was not possible because file level constants are not supported.
-// Warning 8195: (111-165): Model checker analysis was not possible because file level constants are not supported.
-// Warning 8195: (167-204): Model checker analysis was not possible because file level constants are not supported.
-// Warning 8195: (32-55): Model checker analysis was not possible because file level constants are not supported.
-// Warning 8195: (111-165): Model checker analysis was not possible because file level constants are not supported.
-// Warning 8195: (167-204): Model checker analysis was not possible because file level constants are not supported.

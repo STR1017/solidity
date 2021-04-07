@@ -78,17 +78,13 @@ void CHC::analyze(SourceUnit const& _source)
 {
 	solAssert(_source.annotation().experimentalFeatures.count(ExperimentalFeature::SMTChecker), "");
 
-	/// This is currently used to abort analysis of SourceUnits
-	/// containing file level functions or constants.
 	if (SMTEncoder::analyze(_source))
 	{
 		resetSourceAnalysis();
 
-		set<SourceUnit const*, ASTNode::CompareByID> sources;
-		sources.insert(&_source);
-		for (auto const& source: _source.referencedSourceUnits(true))
-			sources.insert(source);
+		auto sources = sourceDependencies(_source);
 		collectFreeFunctions(sources);
+		createFreeConstants(sources);
 		for (auto const* source: sources)
 			defineInterfacesAndSummaries(*source);
 		for (auto const* source: sources)

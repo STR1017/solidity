@@ -51,27 +51,6 @@ SMTEncoder::SMTEncoder(smt::EncodingContext& _context):
 
 bool SMTEncoder::analyze(SourceUnit const& _source)
 {
-	set<SourceUnit const*, smt::EncodingContext::IdCompare> sources;
-	sources.insert(&_source);
-	for (auto const& source: _source.referencedSourceUnits(true))
-		sources.insert(source);
-
-	bool analysis = true;
-	for (auto source: sources)
-		for (auto node: source->nodes())
-			if (auto var = dynamic_pointer_cast<VariableDeclaration>(node))
-			{
-				m_errorReporter.warning(
-					8195_error,
-					var->location(),
-					"Model checker analysis was not possible because file level constants are not supported."
-				);
-				analysis = false;
-			}
-
-	if (!analysis)
-		return false;
-
 	state().prepareForSourceUnit(_source);
 
 	return true;
@@ -2913,6 +2892,15 @@ set<FunctionCall const*> SMTEncoder::collectABICalls(ASTNode const* _node)
 	return ABIFunctions(_node).abiCalls;
 }
 
+set<SourceUnit const*, ASTNode::CompareByID> SMTEncoder::sourceDependencies(SourceUnit const& _source)
+{
+	set<SourceUnit const*, ASTNode::CompareByID> sources;
+	sources.insert(&_source);
+	for (auto const& source: _source.referencedSourceUnits(true))
+		sources.insert(source);
+	return sources;
+}
+
 void SMTEncoder::createReturnedExpressions(FunctionCall const& _funCall, ContractDefinition const* _contextContract)
 {
 	auto funDef = functionCallToDefinition(_funCall, currentScopeContract(), _contextContract);
@@ -2974,6 +2962,14 @@ void SMTEncoder::collectFreeFunctions(set<SourceUnit const*, ASTNode::CompareByI
 					if (!function->isPublic())
 						m_freeFunctions.insert(function);
 			}
+}
+
+void SMTEncoder::createFreeConstants(set<SourceUnit const*, ASTNode::CompareByID> const& _sources)
+{
+	for (auto source: _sources)
+		for (auto node: source->nodes())
+			if (auto var = dynamic_cast<VariableDeclaration const*>(node.get()))
+				createVariable(*var);
 }
 
 smt::SymbolicState& SMTEncoder::state()
